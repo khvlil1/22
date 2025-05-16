@@ -1,28 +1,30 @@
 #include "DataManager.h"
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 using namespace std;
 
-void DataManager::loadAdmins(const string& filename) {
-    ifstream fin(filename);
-    if (!fin.is_open()) {
-        cout << "Admins file not found, starting with empty list.\n";
+DataManager& DataManager::getInstance() {
+    static DataManager instance;  // Created once, lives for the lifetime of the program
+    return instance;
+}
+void DataManager::loadAdmins(const std::string& filename) {
+    std::ifstream inFile(filename);
+    if (!inFile) {
+        std::cout << "Admin file not found. Creating default admin.\n";
+        admins["admin"] = Administrator("admin", "admin", "A");
         return;
     }
-    string line;
-    while (getline(fin, line)) {
-        istringstream iss(line);
-        string username, password, role;
-        if (iss >> username >> password >> role) {
-            Administrator admin(username, password);
-            admin.setRole(role);  // Assuming Administrator inherits from User and has setRole
-            admins[username] = admin;
+
+    std::string username, password, role;
+    while (inFile >> username >> password >> role) {
+        if (admins.empty()) { // Allow only one admin
+            admins[username] = Administrator(username, password, role);
         }
     }
-    fin.close();
 }
+
 
 
 void DataManager::loadCourses(const string& filename) {
@@ -84,7 +86,9 @@ void DataManager::loadStudents(const string& filename) {
     string line;
     while (getline(fin, line)) {
         if (line.empty()) continue;
-        // First line: student info
+        // First line: student info (format updated to include username)
+        // Format example:
+        // studentID|username|firstName|lastName|email|password|academicYear|major|role
         vector<string> tokens;
         size_t pos = 0, prev = 0;
         while ((pos = line.find('|', prev)) != string::npos) {
@@ -92,16 +96,17 @@ void DataManager::loadStudents(const string& filename) {
             prev = pos + 1;
         }
         tokens.push_back(line.substr(prev));
-        if (tokens.size() < 8) continue;
+        if (tokens.size() < 9) continue;  // expect at least 9 fields now
 
         Student s;
         s.setStudentID(tokens[0]);
-        s.setStudentName(tokens[1],tokens[2]);
-        s.setEmail(tokens[3]);
-        s.setPassword(tokens[4]);
-        s.setAcademicYear(stoi(tokens[5]));
-        s.setMajor(tokens[6]);
-        s.setRole(tokens[7]); ////////////////////////////////////
+        s.setUsername(tokens[1]);            // New: set username
+        s.setStudentName(tokens[2], tokens[3]);
+        s.setEmail(tokens[4]);
+        s.setPassword(tokens[5]);
+        s.setAcademicYear(stoi(tokens[6]));
+        s.setMajor(tokens[7]);
+        s.setRole(tokens[8]);
 
         // Registered courses (next line)
         unordered_map<string, Course> regCourses;
@@ -134,10 +139,12 @@ void DataManager::loadStudents(const string& filename) {
             }
         }
 
-        students[s.getEmail()] = s;
+        students[s.getUsername()] = s;  // Key by username now
     }
     fin.close();
 }
+
+
 
 
 
@@ -179,17 +186,18 @@ void DataManager::saveCourses(const string& filename) const {
 void DataManager::saveStudents(const string& filename) const {
     ofstream fout(filename);
     for (const auto& pair : students) {
-         const Student& s = pair.second;//email 
+        const Student& s = pair.second;
 
-        // Student main info
+        // Save all info including username after studentID
         fout << s.getStudentID() << "|"
-             << s.getStudentfName() << "|"
+            << s.getUsername() << "|"
+            << s.getStudentfName() << "|"
             << s.getStudentlName() << "|"
-             << s.getEmail() << "|"
-             << s.getPassword() << "|"
-             << s.getAcademicYear() << "|"
-             << s.getMajor() << "|"
-             << s.getRole() << "\n"; // Save role//////////////////////////////////
+            << s.getEmail() << "|"
+            << s.getPassword() << "|"
+            << s.getAcademicYear() << "|"
+            << s.getMajor() << "|"
+            << s.getRole() << "\n";
 
         // Registered courses
         const auto& regCourses = s.getRegisteredCourses();
@@ -209,9 +217,4 @@ void DataManager::saveStudents(const string& filename) const {
     }
     fout.close();
 }
-
-
-
-
-
 
