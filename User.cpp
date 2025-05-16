@@ -1,6 +1,7 @@
 #include "User.h"
 #include "Course.h"
 #include"Student.h"
+#include"DataManager.h"
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -9,7 +10,7 @@ User::User() {
 
 }
 
-User::User(string u, string p, string r) : username(u), password(p), role(r) {}/////////////////////////////////////////
+User::User(const string& u, const string& p, const string& r) : username(u), password(p), role(r) {}/////////////////////////////////////////
 
 unordered_map<string, Course> User::getCourses() const
 {
@@ -21,6 +22,13 @@ void User::setCourses(const unordered_map<string, Course>& newCourses)
     courses = newCourses;
 }
 
+void User::setUsername(const string& u) {
+    username = u;
+}
+
+void User::setPassword(const string& p) {
+    password = p;
+}
 
 string User::getUsername() const {
     return username;
@@ -30,70 +38,66 @@ string User::getPassword() const {
     return password;
 }
 
-string User:: getRole() const { ///////////////////////////////////////////////////////////////////////
-    return role; 
+string User::getRole() const { ///////////////////////////////////////////////////////////////////////
+    return role;
 }
 
-void User:: setRole(string r) { ////////////////////////////////////////////////////////////
-    role = r; 
+void User::setRole(string r) { ////////////////////////////////////////////////////////////
+    role = r;
 }
-void User::signUp(unordered_map<string, User>& users)
-{
-    unordered_map<string, Student> students;
+void User::signUp(unordered_map<string, User>& users) {
+    string studentID, username, email, password, firstName, lastName;
+    int academicYear;
+    string major;
 
-    string username, password;
-    string firstName, lastName, ID, role;
+    cout << "Sign up as a Student:\n";
+    cout << "Enter Student ID: ";
+    cin >> studentID;
 
-    cout << "Enter your first name: ";
-    cin >> firstName;
-    cout << "Enter your last name: ";
-    cin >> lastName;
-    cout << "Enter your ID: ";
-    cin >> ID;
+    cout << "Enter username: ";
+    cin >> username;
 
-    while (true) {
-        cout << "Create a username: ";
-        cin >> username;
-        if (users.find(username) != users.end()) {
-            cout << "Username already exists. Please try again." << endl;
-        }
-        else {
-            break;
-        }
+    // Check if username already exists in users map
+    if (users.find(username) != users.end()) {
+        cout << "Username already taken. Please try again.\n";
+        return;
     }
 
-    cout << "Create a password: ";
+    cout << "Enter email: ";
+    cin >> email;
+    cout << "Enter password: ";
     cin >> password;
+    cout << "Enter first name: ";
+    cin >> firstName;
+    cout << "Enter last name: ";
+    cin >> lastName;
+    cout << "Enter academic year (number): ";
+    cin >> academicYear;
+    cout << "Enter major: ";
+    cin >> major;
 
-    // Ask for role only during sign-up
-    while (true) {
-        cout << "Are you signing up as an Administrator (A) or Student (S)? ";
-        cin >> role;
-        if (role == "A" || role == "a") {
-            role = "A";
-            User newUser(username, password);
-            newUser.setRole(role);
-            users[username] = newUser;
-            break;
-        }
-        else if (role == "S" || role == "s") {
-            role = "S";
-            Student newStudent(username, password,role);
-            newStudent.setStudentID(ID);
-            students[ID] = newStudent;
-            break;
-        }
-        else {
-            cout << "Invalid choice. Please enter A or S." << endl;
-        }
-    }
-    // el t7t dol kano sh8alen before adding el fe S and A w bysave bs only username and Year and Courses registered and grades, bs no ID no Name and password and Major also
-    //User newUser(username, password);
-    //newUser.setRole(role); // Make sure you have setRole method in User class
-    //users[username] = newUser;
+    // Create Student with constructor
+    Student newStudent(username, password, "S");
+    newStudent.setStudentID(studentID);
+    newStudent.setEmail(email);
+    newStudent.setStudentName(firstName, lastName);
+    newStudent.setAcademicYear(academicYear);
+    newStudent.setMajor(major);
 
-    cout << "Account created successfully!" << endl;
+    // Add to users map (keyed by username)
+    users[username] = User(username, password, "S");
+
+    // Add to DataManager singleton students map (keyed by studentID)
+    DataManager& dm = DataManager::getInstance();
+    dm.getStudents()[username] = newStudent;
+
+    dm.saveStudents("students.txt");
+
+    cout << "Sign up successful! You can now sign in.\n";
 }
+
+
+
 
 string User::signIn(const unordered_map<string, User>& users)
 {
