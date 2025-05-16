@@ -23,7 +23,7 @@ private:
 
 public:
     Student();
-    Student(string username, string password,string role);
+    Student(const string& username, const string& password, const string& role);
     void setStudentID(const string& id);
     void setStudentName(const string& fname, const string& lname);
     void setEmail(const string& email);
