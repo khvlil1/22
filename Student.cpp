@@ -9,11 +9,8 @@ using namespace std;
 Student::Student() : academicYear(0) {}
 
 
-Student:: Student(string u, string p, string r) {
-    username = u;
-    password = p;
-    role = r;
-}
+Student::Student(const string& username, const string& password, const string& role) : User(username,password,role) {}
+
 void Student::setStudentID(const string& id) {
     StudentId = id;
 }
@@ -28,7 +25,7 @@ void Student::setEmail(const string& e) {
 }
 
 void Student::setPassword(const string& pwd) {
-    password = pwd;
+    User::setPassword(pwd);
 }
 
 void Student::setAcademicYear(int year) {
@@ -57,7 +54,7 @@ string Student::getEmail() const {
 }
 
 string Student::getPassword() const {
-    return password;
+    return User::getPassword();
 }
 
 int Student::getAcademicYear() const {
