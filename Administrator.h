@@ -22,10 +22,9 @@ class Administrator : public User
 {
   public:
       Administrator(); /////////////////////////////////////////////////////////////////////////////////
-
-    Administrator(string u, string p);
+      Administrator(const string& username, const string& password, const string& role);
+    //Administrator(string u, string p);
     void uploadCourse();
     void setPrerequisites();
     void manageStudentGrades(unordered_map<string, Student>& students, const unordered_map<string, Course>& availableCourses);
 };
-
