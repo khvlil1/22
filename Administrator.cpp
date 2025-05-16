@@ -10,7 +10,7 @@ using namespace std;
 
 
 
-Administrator::Administrator(string u, string p) : User(u, p) {}
+//Administrator::Administrator(string u, string p) : User(u, p) {}
 
 
 
@@ -178,6 +178,6 @@ void Administrator::manageStudentGrades(unordered_map<string, Student>& students
 
 
 
-Administrator::Administrator() : User("", "") {} ////////////////////////////////////////////////////////////////////////////////////////
+Administrator::Administrator() : User("", "","") {} ////////////////////////////////////////////////////////////////////////////////////////
 
-
+Administrator::Administrator(const string& username, const string& password, const string& role) : User(username,password,role) {}
