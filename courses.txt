@@ -1,0 +1,6 @@
+S123|Ziad|Ahmed|userziad|password123|2|ComputerScience|S
+C101,C102
+C101:88.5,C102:91
+S124|Mohamed|Ali|userali|mopassword|1|Mathematics|S
+C103
+C103:75
