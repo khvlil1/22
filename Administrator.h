@@ -21,10 +21,12 @@ struct Semester {
 class Administrator : public User
 {
   public:
-      Administrator(); /////////////////////////////////////////////////////////////////////////////////
+      Administrator(); 
       Administrator(const string& username, const string& password, const string& role);
-    //Administrator(string u, string p);
     void uploadCourse();
     void setPrerequisites();
     void manageStudentGrades(unordered_map<string, Student>& students, const unordered_map<string, Course>& availableCourses);
+
+    void assignGradeToStudent(Student& student, const std::string& courseID, float grade) const;
+
 };
