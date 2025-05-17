@@ -29,16 +29,17 @@ int main() {
 
     unordered_map<string, User> users;
     populateUsersFromDataManager(dataManager, users);
-    // Use references here to avoid copies
+    
+
     auto& students = dataManager.getStudents();
     auto& availableCourses = dataManager.getCourses();
 
     Administrator admin("admin", "admin", "A"); // default admin
 
-    cout << "Loaded users:\n";
-    for (const auto& u : users) {
-        cout << "Username: " << u.first << ", Password: " << u.second.getPassword() << endl;
-    }
+    //cout << "Loaded users:\n";
+    //for (const auto& u : users) {
+    //    cout << "Username: " << u.first << ", Password: " << u.second.getPassword() << endl;
+    //}
 
     char choice;
     string currentUsername;
@@ -96,7 +97,7 @@ int main() {
 
                 char option;
                 while (true) {
-                    cout << "\nDo you want to register a course (r), view grades (v), undo course (u), or exit (e)? ";
+                    cout << "\nDo you want to register a course (r), view grades (v), undo course (u), generate report(g) or exit (e)? ";
                     cin >> option;
 
                     if (option == 'r' || option == 'R') {
@@ -141,6 +142,10 @@ int main() {
                             }
                         }
                     }
+                    else if (option == 'g' || option == 'G') {
+                        student.GenerateReport();
+                    }
+
                     else if (option == 'e' || option == 'E') {
                         break;
                     }
@@ -152,8 +157,6 @@ int main() {
         }
     }
 
-    //dataManager->getStudents() = students;
-    //dataManager->getCourses() = availableCourses;
 
     dataManager.saveAdmins("admins.txt");
     dataManager.saveCourses("courses.txt");
