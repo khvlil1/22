@@ -4,12 +4,14 @@
 #include<vector>
 #include <iostream>
 #include <string>
+
+
 using namespace std;
 
 Student::Student() : academicYear(0) {}
 
 
-Student::Student(const string& username, const string& password, const string& role) : User(username,password,role) {}
+Student::Student(const string& username, const string& password, const string& role) : User(username, password, role) {}
 
 void Student::setStudentID(const string& id) {
     StudentId = id;
@@ -42,7 +44,7 @@ string Student::getStudentID() const {
 
 string Student::getStudentfName() const {
     return firstName;
- }
+}
 
 
 string Student::getStudentlName() const {
@@ -105,7 +107,7 @@ void Student::Search(const string& courseID, const unordered_map<string, Course>
             if (!prerequisites.empty()) {
                 cout << "Checking prerequisites...\n";
 
-                // Debug: Print all registered courses
+                //Print all registered courses
                 cout << "Your registered courses: " << endl;
                 for (const auto& pair : registeredCourses) {
                     cout << "- " << pair.second.getCourseName() << " (ID: " << pair.first << ")" << endl;
@@ -114,7 +116,7 @@ void Student::Search(const string& courseID, const unordered_map<string, Course>
                 for (const string& prereqID : prerequisites) {
                     cout << "Checking prerequisite: " << prereqID;
 
-                    // Find the name of this prerequisite for better output
+                    // Find the name of this prerequisite
                     string prereqName = prereqID;
                     if (availableCourses.find(prereqID) != availableCourses.end()) {
                         prereqName = availableCourses.at(prereqID).getCourseName();
@@ -122,7 +124,7 @@ void Student::Search(const string& courseID, const unordered_map<string, Course>
                     }
                     cout << endl;
 
-                    // Check if this prerequisite is in registered courses
+                    // Check if prerequisite is in registered courses
                     if (registeredCourses.find(prereqID) == registeredCourses.end()) {
                         cout << "Missing prerequisite course: " << prereqName << " (ID: " << prereqID << ")" << endl;
                         allPrereqsMet = false;
@@ -161,52 +163,108 @@ void Student::Search(const string& courseID, const unordered_map<string, Course>
     }
 }
 
- void Student::setGrade(const string & courseID, float grade) {
-        grades[courseID] = grade;
+void Student::ViewStudentGrades() {
+    if (grades.empty()) {
+        cout << "No grades available for this student.\n";
+        return;
+    }
+
+    cout << "\nGrades for registered courses:\n";
+    for (const auto& pair : grades) {
+        cout << "Course ID: " << pair.first << " -> Grade: " << pair.second << "\n";
+    }
 }
- void Student::ViewStudentGrades() {
-     if (grades.empty()) {
-         cout << "No grades available for this student.\n";
-         return;
-     }
+bool Student::RemoveRegistration() {
+    if (CurrentRegistration.empty()) {
+        cout << "No registration to undo.\n";
+        return false;
+    }
 
-     cout << "\nGrades for registered courses:\n";
-     for (const auto& pair : grades) {
-         cout << "Course ID: " << pair.first << " -> Grade: " << pair.second << "\n";
-     }
- }
- bool Student::RemoveRegistration() {
-     if (CurrentRegistration.empty()) {
-         cout << "No registration to undo.\n";
-         return false;
-     }
+    
+    string lastCourseID = CurrentRegistration.top();
+    CurrentRegistration.pop();
 
-     // Pop the last course ID from the stack
-     string lastCourseID = CurrentRegistration.top();
-     CurrentRegistration.pop();
+    // Find the course in the registered courses map
+    auto course = registeredCourses.find(lastCourseID);
+    if (course != registeredCourses.end()) {
+        string courseName = course->second.getCourseName();
 
-     // Find the course in the registered courses map
-     auto course = registeredCourses.find(lastCourseID);
-     if (course != registeredCourses.end()) {
-         string courseName = course->second.getCourseName();
+        
+        registeredCourses.erase(lastCourseID);
 
-         // Corrected: Erase the course using the key (lastCourseID)
-         registeredCourses.erase(lastCourseID);
+        cout << "Successfully unregistered from course: " << courseName << " (ID: " << lastCourseID << ")\n";
 
-         cout << "Successfully unregistered from course: " << courseName << " (ID: " << lastCourseID << ")\n";
-
-         // Print updated course list
-         cout << "\nYour current registered courses:\n";
-         for (const auto& pair : registeredCourses) {
-             cout << "- " << pair.second.getCourseName() << " (ID: " << pair.first << ")" << endl;
-         }
-         return true;
-     }
-     else {
-         cout << "Error: Course " << lastCourseID << " not found in registered courses.\n";
-         return false;
-     }
- }
+        // Print updated course list
+        cout << "\nYour current registered courses:\n";
+        for (const auto& pair : registeredCourses) {
+            cout << "- " << pair.second.getCourseName() << " (ID: " << pair.first << ")" << endl;
+        }
+        return true;
+    }
+    else {
+        cout << "Error: Course " << lastCourseID << " not found in registered courses.\n";
+        return false;
+    }
+}
 
 
-   
+void Student::GenerateReport() const {
+    cout << "\n===== STUDENT REPORT =====\n";
+
+
+
+    cout << "--------------------------\n";
+    cout << "Name: " << firstName << " " << lastName << "\n";
+
+    cout << "ID: " << StudentId << "\n";
+    cout << "Academic Year: " << academicYear << "\n";
+    cout << "Major: " << major << "\n\n";
+
+    if (registeredCourses.empty()) {
+        cout << "No courses registered.\n";
+        return;
+    }
+
+    float totalPoints = 0;
+    int totalCredits = 0;
+
+    cout << "Courses and Grades:\n";
+    cout << "-------------------\n";
+
+    for (const auto& coursePair : registeredCourses) {
+        string courseID = coursePair.first;
+        const Course& course = coursePair.second;
+
+        float grade = 0.0f;
+        if (grades.find(courseID) != grades.end()) {
+            grade = grades.at(courseID);
+        }
+
+        int creditHours = course.getCreditHours();
+
+        //GPA conversion
+        float gradePoint = 0.0;
+        if (grade >= 90) gradePoint = 4.0;
+        else if (grade >= 80) gradePoint = 3.0;
+        else if (grade >= 70) gradePoint = 2.0;
+        else if (grade >= 60) gradePoint = 1.0;
+        else gradePoint = 0.0;
+
+        cout << course.getCourseName() << " (" << courseID << ") - Grade: " << grade
+            << " - Credits: " << creditHours << " - Grade Point: " << gradePoint << "\n";
+
+        totalPoints += gradePoint * creditHours;
+        totalCredits += creditHours;
+    }
+
+    cout << "\nTotal Credit Hours: " << totalCredits << "\n";
+    if (totalCredits > 0) {
+        float gpa = totalPoints / totalCredits;
+        cout << "Semester GPA: " << gpa << "\n";
+    }
+    else {
+        cout << "No credit hours to calculate GPA.\n";
+    }
+
+    cout << "==========================\n";
+}
