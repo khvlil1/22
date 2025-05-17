@@ -7,7 +7,7 @@
 
 class DataManager {
 private:
-    DataManager() {}  // Private constructor
+    DataManager() {}  
 
     std::unordered_map<std::string, Administrator> admins;
     std::unordered_map<std::string, Student> students;
