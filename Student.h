@@ -20,6 +20,8 @@ private:
     unordered_map<string, Course> registeredCourses;
     unordered_map<string, float> grades;
     stack<string> CurrentRegistration;
+    friend class Administrator; // to access grades
+
 
 public:
     Student();
@@ -41,7 +43,7 @@ public:
     unordered_map<std::string, float> getGrades() const;
 
 
-    void setGrade(const string& courseID, float grade);
+    
     void ViewStudentGrades();
 
 
@@ -49,4 +51,5 @@ public:
     unordered_map<string, Course> getRegisteredCourses() const;
     void Search(const string& courseID, const unordered_map<string, Course>& availableCourses);
     bool RemoveRegistration();
+    void GenerateReport()const;
 };
