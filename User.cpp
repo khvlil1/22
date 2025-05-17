@@ -10,14 +10,13 @@ User::User() {
 
 }
 
-User::User(const string& u, const string& p, const string& r) : username(u), password(p), role(r) {}/////////////////////////////////////////
+User::User(const string& u, const string& p, const string& r) : username(u), password(p), role(r) {}
 
-unordered_map<string, Course> User::getCourses() const
-{
+unordered_map<string, Course>& User::getCourses() {
     return courses;
 }
 
-void User::setCourses(const unordered_map<string, Course>& newCourses)
+void User::setCourses(unordered_map<string, Course>& newCourses)
 {
     courses = newCourses;
 }
@@ -38,11 +37,11 @@ string User::getPassword() const {
     return password;
 }
 
-string User::getRole() const { ///////////////////////////////////////////////////////////////////////
+string User::getRole() const { 
     return role;
 }
 
-void User::setRole(string r) { ////////////////////////////////////////////////////////////
+void User::setRole(string r) { 
     role = r;
 }
 void User::signUp(unordered_map<string, User>& users) {
@@ -57,7 +56,7 @@ void User::signUp(unordered_map<string, User>& users) {
     cout << "Enter username: ";
     cin >> username;
 
-    // Check if username already exists in users map
+    // Check if username exists in users map
     if (users.find(username) != users.end()) {
         cout << "Username already taken. Please try again.\n";
         return;
@@ -76,7 +75,7 @@ void User::signUp(unordered_map<string, User>& users) {
     cout << "Enter major: ";
     cin >> major;
 
-    // Create Student with constructor
+   
     Student newStudent(username, password, "S");
     newStudent.setStudentID(studentID);
     newStudent.setEmail(email);
@@ -84,10 +83,10 @@ void User::signUp(unordered_map<string, User>& users) {
     newStudent.setAcademicYear(academicYear);
     newStudent.setMajor(major);
 
-    // Add to users map (keyed by username)
+    // Add to users map
     users[username] = User(username, password, "S");
 
-    // Add to DataManager singleton students map (keyed by studentID)
+    // Add to DataManager 
     DataManager& dm = DataManager::getInstance();
     dm.getStudents()[username] = newStudent;
 
