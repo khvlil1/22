@@ -134,8 +134,11 @@ void DataManager::loadStudents(const string& filename) {
                     grades[cID] = grade;
                 }
             }
+
+            Administrator tempAdmin; // just to call assignGradeToStudent
+
             for (auto& g : grades) {
-                s.setGrade(g.first, g.second);
+                tempAdmin.assignGradeToStudent(s, g.first, g.second);
             }
         }
 
